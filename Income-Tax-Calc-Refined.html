@@ -1,0 +1,1415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indian Income Tax Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #FF6B6B 0%, #4ECDC4 25%, #45B7D1 50%, #FFA07A 75%, #98D8C8 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Animated currency background */
+        .currency-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .currency {
+            position: absolute;
+            font-size: 50px;
+            opacity: 0.4;
+            animation: float 15s infinite;
+            filter: brightness(1.2) contrast(1.1) drop-shadow(3px 3px 6px rgba(0,0,0,0.4));
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.4;
+            }
+            90% {
+                opacity: 0.4;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #fff;
+            margin-bottom: 15px;
+            font-size: 1.15em;
+            font-style: italic;
+            font-weight: 300;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+            letter-spacing: 0.5px;
+        }
+
+        .powered-by {
+            text-align: center;
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6, #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 30px;
+            font-size: 1.4em;
+            font-family: 'Georgia', serif;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
+            padding: 10px 0;
+        }
+
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .regime-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .regime-title {
+            font-size: 1.8em;
+            color: #667eea;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1.1em;
+            transition: all 0.3s;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+        }
+
+        .result-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-top: 10px;
+            padding-top: 15px;
+            border-top: 2px solid rgba(255,255,255,0.5);
+        }
+
+        .result-label {
+            font-weight: 500;
+        }
+
+        .result-value {
+            font-weight: bold;
+        }
+
+        .breakdown {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            font-size: 0.9em;
+        }
+
+        .breakdown-item {
+            padding: 5px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .comparison {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .comparison h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .savings {
+            font-size: 2em;
+            font-weight: bold;
+            color: #28a745;
+            margin: 20px 0;
+        }
+
+        .recommendation {
+            font-size: 1.2em;
+            color: #333;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+
+        @media (max-width: 968px) {
+            .calculator-grid {
+                grid-template-columns: 1fr;
+            }
+            h1 {
+                font-size: 1.8em;
+            }
+        }
+
+        .note {
+            background: rgba(255, 243, 205, 0.9);
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 0.85em;
+            color: #856404;
+            border-left: 4px solid #ffc107;
+        }
+
+        .action-buttons {
+            text-align: center;
+            margin: 30px 0 20px 0;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            font-size: 1.1em;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-download {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+        }
+
+        .btn-print {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+        }
+
+        .btn-reset {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+        }
+
+        @media print {
+            .action-buttons, .currency-animation {
+                display: none !important;
+            }
+            body {
+                background: white;
+            }
+            .regime-card, .comparison {
+                box-shadow: none;
+                border: 2px solid #ddd;
+            }
+        }
+
+        .chart-container {
+            background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+            border: 1px solid rgba(255,255,255,0.12);
+            backdrop-filter: blur(14px);
+            border-radius: 22px;
+            padding: 28px 28px 36px;
+            box-shadow: 0 30px 80px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.12);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .chart-container:hover {
+            transform: translateY(-5px);
+        }
+
+        .chart-title {
+            text-align: center;
+            color: #e8ecf3;
+            font-size: 1.8em;
+            font-weight: 600;
+            margin-bottom: 26px;
+            letter-spacing: 0.3px;
+        }
+
+        .tax-chart {
+            position: relative;
+            height: 320px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            gap: 40px;
+            padding: 0 40px;
+        }
+
+        .bar-wrap {
+            position: relative;
+            width: 120px;
+            height: 100%;
+            display: flex;
+            align-items: flex-end;
+        }
+
+        .bar {
+            position: relative;
+            width: 100%;
+            height: 0%;
+            border-radius: 18px 18px 12px 12px;
+            transition: height 1.2s ease-in-out, transform .2s ease;
+            box-shadow: 0 0 22px rgba(80,250,123,0.25), 0 4px 15px rgba(0,0,0,0.3);
+            cursor: pointer;
+            overflow: hidden;
+            border: 2px solid rgba(255,255,255,0.15);
+        }
+
+        .bar::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,.05) 40%, transparent 60%);
+            mix-blend-mode: overlay;
+            pointer-events: none;
+        }
+
+        .bar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(80,250,123,0.4), 0 6px 20px rgba(0,0,0,0.4);
+        }
+
+        .bar-label {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translate(-50%, 12px) scale(.95);
+            opacity: 0;
+            pointer-events: none;
+            background: rgba(10,15,25,.95);
+            border: 1px solid rgba(255,255,255,.3);
+            padding: 10px 14px;
+            border-radius: 10px;
+            white-space: nowrap;
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: .3px;
+            color: #ffffff;
+            box-shadow: 0 10px 30px rgba(0,0,0,.8);
+            transition: opacity .3s ease, transform .3s ease;
+            z-index: 10;
+        }
+
+        .bar-wrap:hover .bar-label {
+            opacity: 1;
+            transform: translate(-50%, -12px) scale(1);
+        }
+
+        .bar-caption {
+            text-align: center;
+            margin-top: 14px;
+            font-size: 13px;
+            opacity: .75;
+        }
+
+        .bar-name {
+            text-align: center;
+            margin-top: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            color: #e8ecf3;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+        }
+
+        /* Rupee note backgrounds */
+        .bar.rupee-500 {
+            background: linear-gradient(135deg, #f5e6d3 0%, #e6d5c3 100%);
+            background-image: url("https://images.jdmagicbox.com/quickquotes/images_main/mtc1ndu5ntqyng-1754595426-d0je9zr4.png");
+            background-repeat: repeat;
+            background-size: 100px 50px;
+            background-position: center;
+            background-blend-mode: multiply;
+            min-height: 20px;
+        }
+
+        .bar.rupee-2000 {
+            background: linear-gradient(135deg, #ffe4f5 0%, #ffd4ed 100%);
+            background-image: url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZMQw-_BJrk69CHBGy2goSaUrsIclgFAZLUA&s");
+            background-repeat: repeat;
+            background-size: 100px 50px;
+            background-position: center;
+            background-blend-mode: multiply;
+            min-height: 20px;
+        }
+
+        /* Fallback colors if images don't load */
+        .bar.rupee-500::before {
+            display: none;
+        }
+
+        .bar.rupee-2000::before {
+            display: none;
+        }
+
+        /* Hide chart when both values are zero */
+        .tax-chart.empty {
+            display: none;
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 60px 20px;
+            color: rgba(232, 236, 243, 0.5);
+            font-size: 16px;
+            display: none;
+        }
+
+        .tax-chart.empty + .empty-message {
+            display: block;
+        }
+
+        #taxChart {
+            display: none;
+        }
+
+        .bottom-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        /* Premium Tic-Tac-Toe Game - Neon Glass Style */
+        .game-container {
+            background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,0.18);
+            border-radius: 22px;
+            padding: 28px;
+            box-shadow: 0 30px 80px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.15);
+        }
+
+        .game-title {
+            text-align: center;
+            color: #e8eef5;
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-bottom: 18px;
+            text-shadow: 0 0 20px rgba(80, 250, 123, 0.3);
+        }
+
+        .player-names {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 22px;
+        }
+
+        .player-input {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.18);
+            border-radius: 16px;
+            padding: 14px;
+            text-align: center;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,.12);
+        }
+
+        .player-icon {
+            font-size: 42px;
+            line-height: 1;
+            filter: drop-shadow(0 0 12px currentColor);
+            margin-bottom: 6px;
+        }
+
+        .player-icon.x {
+            color: #7aa2ff;
+        }
+
+        .player-icon.o {
+            color: #ffffff;
+        }
+
+        .player-input label {
+            display: none;
+        }
+
+        .player-input input {
+            width: 100%;
+            margin-top: 6px;
+            padding: 8px 10px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,.2);
+            background: rgba(0,0,0,.25);
+            color: #e8eef5;
+            outline: none;
+            text-align: center;
+            font-size: 1em;
+        }
+
+        .player-score {
+            margin-top: 6px;
+            font-size: 22px;
+            color: #50fa7b;
+            text-shadow: 0 0 12px rgba(80,250,123,.6);
+            font-weight: 700;
+        }
+
+        .board-wrap {
+            position: relative;
+            margin: 22px auto;
+            width: 100%;
+            max-width: 360px;
+            aspect-ratio: 1;
+        }
+
+        .game-board {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 10px;
+            padding: 10px;
+            border-radius: 18px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.18);
+        }
+
+        .cell {
+            background: rgba(0,0,0,.35);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 56px;
+            cursor: pointer;
+            user-select: none;
+            border: 1px solid rgba(255,255,255,.12);
+            transition: transform .15s ease, box-shadow .2s ease;
+        }
+
+        .cell:hover:not(.taken) {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(0,0,0,.4);
+        }
+
+        .cell.taken {
+            cursor: not-allowed;
+        }
+
+        .cell.x {
+            color: #7aa2ff;
+            text-shadow: 0 0 16px rgba(122,162,255,.8);
+        }
+
+        .cell.o {
+            color: #ffffff;
+            text-shadow: 0 0 12px rgba(255,255,255,.7);
+        }
+
+        .win-line {
+            position: absolute;
+            inset: 10px;
+            pointer-events: none;
+        }
+
+        .win-line::before {
+            content: "";
+            position: absolute;
+            left: var(--x1, 0);
+            top: var(--y1, 0);
+            width: var(--len, 0);
+            height: 6px;
+            background: linear-gradient(90deg, transparent, #50fa7b, transparent);
+            transform-origin: left center;
+            transform: rotate(var(--rot, 0deg));
+            filter: drop-shadow(0 0 16px rgba(80,250,123,.9));
+            border-radius: 6px;
+        }
+
+        #dustCanvas {
+            position: absolute;
+            inset: 10px;
+            pointer-events: none;
+        }
+
+        .game-status {
+            text-align: center;
+            font-size: 1.4em;
+            font-weight: 700;
+            color: #e8eef5;
+            margin: 20px 0;
+            min-height: 40px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-game-reset {
+            display: block;
+            margin: 0 auto;
+            padding: 12px 22px;
+            border-radius: 14px;
+            border: 1px solid rgba(80,250,123,.4);
+            background: rgba(80,250,123,.12);
+            color: #50fa7b;
+            cursor: pointer;
+            font-size: 16px;
+            letter-spacing: .4px;
+            transition: box-shadow .2s ease, transform .15s ease;
+            font-weight: 600;
+        }
+
+        .btn-game-reset:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 0 24px rgba(80,250,123,.45);
+        }
+
+        .btn-game-reset:active {
+            transform: translateY(0);
+        }
+
+        @media (max-width: 968px) {
+            .bottom-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Comprehensive Responsive Design */
+        @media (max-width: 1200px) {
+            h1 {
+                font-size: 2em;
+            }
+            
+            .calculator-grid {
+                gap: 20px;
+            }
+            
+            .regime-card, .chart-container, .game-container {
+                padding: 25px;
+            }
+        }
+
+        @media (max-width: 968px) {
+            body {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .subtitle {
+                font-size: 1em;
+            }
+
+            .powered-by {
+                font-size: 1.2em;
+            }
+
+            .calculator-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .bottom-section {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            #taxChart {
+                height: 280px;
+            }
+
+            .game-board {
+                max-width: 250px;
+            }
+
+            .cell {
+                font-size: 2.5em;
+            }
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.5em;
+            }
+
+            .regime-title, .chart-title, .game-title {
+                font-size: 1.4em;
+            }
+
+            .result-item {
+                font-size: 0.9em;
+            }
+
+            .game-board {
+                max-width: 220px;
+                gap: 8px;
+            }
+
+            .cell {
+                font-size: 2em;
+            }
+
+            .player-input input {
+                font-size: 0.9em;
+                padding: 6px 10px;
+            }
+        }
+
+        @media (min-width: 1600px) {
+            .container {
+                max-width: 1600px;
+            }
+
+            #taxChart {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Currency Background -->
+    <div class="currency-animation" id="currencyContainer"></div>
+
+    <div class="container">
+        <h1>💰 Indian Income Tax Calculator 💰</h1>
+        <p class="subtitle">"What You Plan, You Control. What You Control, You Master."</p>
+        <p class="powered-by">POWERED BY VIBHUTI DAVE</p>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button class="btn btn-download" onclick="downloadPDF()">📥 Download PDF</button>
+            <button class="btn btn-print" onclick="printCalculator()">🖨️ Print</button>
+            <button class="btn btn-reset" onclick="resetAll()">🔄 Reset All</button>
+        </div>
+
+        <div class="calculator-grid">
+            <!-- New Regime Card -->
+            <div class="regime-card">
+                <div class="regime-title">🆕 New Regime</div>
+                
+                <div class="input-group">
+                    <label for="grossSalaryNew">Gross Annual Salary (₹)</label>
+                    <input type="number" id="grossSalaryNew" oninput="syncSalary(); calculateTax();" placeholder="Enter your gross salary">
+                </div>
+
+                <div class="result-box">
+                    <div class="result-item">
+                        <span class="result-label">Gross Salary:</span>
+                        <span class="result-value" id="newGross">₹0</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Standard Deduction:</span>
+                        <span class="result-value">₹75,000</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Taxable Income:</span>
+                        <span class="result-value" id="newTaxable">₹0</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Tax Before Cess:</span>
+                        <span class="result-value" id="newTaxBeforeCess">₹0</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Health & Edu Cess (4%):</span>
+                        <span class="result-value" id="newCess">₹0</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Total Tax:</span>
+                        <span class="result-value" id="newTotal">₹0</span>
+                    </div>
+                </div>
+
+                <div class="breakdown" id="newBreakdown"></div>
+                <div class="note">
+                    <strong>Rebate:</strong> No tax if income ≤ ₹12,00,000
+                </div>
+            </div>
+
+            <!-- Old Regime Card -->
+            <div class="regime-card">
+                <div class="regime-title">📜 Old Regime</div>
+                
+                <div class="input-group">
+                    <label for="grossSalaryOld">Gross Annual Salary (₹)</label>
+                    <input type="number" id="grossSalaryOld" oninput="calculateTax()" placeholder="Auto-filled from New Regime" readonly style="background-color: #f0f0f0;">
+                </div>
+
+                <div class="input-group">
+                    <label for="deductions">Additional Deductions (₹)</label>
+                    <input type="number" id="deductions" oninput="calculateTax()" placeholder="80C, 80D, HRA, etc.">
+                </div>
+
+                <div class="result-box">
+                    <div class="result-item">
+                        <span class="result-label">Gross Salary:</span>
+                        <span class="result-value" id="oldGross">₹0</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Standard Deduction:</span>
+                        <span class="result-value">₹50,000</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Additional Deductions:</span>
+                        <span class="result-value" id="oldDeductions">₹0</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Taxable Income:</span>
+                        <span class="result-value" id="oldTaxable">₹0</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Tax Before Cess:</span>
+                        <span class="result-value" id="oldTaxBeforeCess">₹0</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Health & Edu Cess (4%):</span>
+                        <span class="result-value" id="oldCess">₹0</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Total Tax:</span>
+                        <span class="result-value" id="oldTotal">₹0</span>
+                    </div>
+                </div>
+
+                <div class="breakdown" id="oldBreakdown"></div>
+                <div class="note">
+                    <strong>Rebate:</strong> No tax if income ≤ ₹5,00,000
+                </div>
+            </div>
+
+            <!-- Bottom Section: Chart on Left, Game on Right -->
+            <div class="bottom-section">
+                <!-- Chart Section -->
+                <div class="chart-container">
+                    <div class="chart-title">📊 Tax Comparison Chart</div>
+                    <div class="tax-chart" id="taxChartBars">
+                        <div class="bar-wrap">
+                            <div class="bar-label" id="labelNew">₹0</div>
+                            <div class="bar rupee-500" id="barNew"></div>
+                            <div class="bar-name">New Regime</div>
+                        </div>
+                        <div class="bar-wrap">
+                            <div class="bar-label" id="labelOld">₹0</div>
+                            <div class="bar rupee-2000" id="barOld"></div>
+                            <div class="bar-name">Old Regime</div>
+                        </div>
+                    </div>
+                    <div class="empty-message">Enter salary details to see tax comparison</div>
+                    <div class="bar-caption">Hover over each pillar to reveal exact tax values</div>
+                    <canvas id="taxChart" style="display: none;"></canvas>
+                </div>
+
+                <!-- Tic-Tac-Toe Game -->
+                <div class="game-container">
+                    <div class="game-title">🎮 Tic-Tac-Toe</div>
+                    
+                    <div class="player-names">
+                        <div class="player-input">
+                            <div class="player-icon x">✕</div>
+                            <input type="text" id="playerXName" value="Player X" maxlength="15">
+                            <div class="player-score" id="scoreX">0</div>
+                        </div>
+                        <div class="player-input">
+                            <div class="player-icon o">◯</div>
+                            <input type="text" id="playerOName" value="Player O" maxlength="15">
+                            <div class="player-score" id="scoreO">0</div>
+                        </div>
+                    </div>
+
+                    <div class="board-wrap">
+                        <div class="game-board" id="gameBoard">
+                            <div class="cell" data-index="0"></div>
+                            <div class="cell" data-index="1"></div>
+                            <div class="cell" data-index="2"></div>
+                            <div class="cell" data-index="3"></div>
+                            <div class="cell" data-index="4"></div>
+                            <div class="cell" data-index="5"></div>
+                            <div class="cell" data-index="6"></div>
+                            <div class="cell" data-index="7"></div>
+                            <div class="cell" data-index="8"></div>
+                        </div>
+                        <div class="win-line" id="winLine"></div>
+                        <canvas id="dustCanvas"></canvas>
+                    </div>
+
+                    <div class="game-status" id="gameStatus">Player X's turn</div>
+                    
+                    <button class="btn btn-game-reset" onclick="resetGame()">🔄 Reset Game</button>
+                </div>
+            </div>
+
+            <!-- Comparison Section -->
+            <div class="comparison">
+                <h2>📊 Regime Comparison</h2>
+                <div class="savings" id="savingsAmount">Calculate to see savings</div>
+                <div class="recommendation" id="recommendation">Enter your salary details to get personalized recommendation</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Create animated currency symbols
+        function createCurrency() {
+            const container = document.getElementById('currencyContainer');
+            // Using currency emojis representing different currencies
+            const symbols = ['💵', '💴', '💶', '💷', '💸', '💰', '🪙', '💳'];
+            
+            for (let i = 0; i < 25; i++) {
+                const currency = document.createElement('div');
+                currency.className = 'currency';
+                currency.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+                currency.style.left = Math.random() * 100 + '%';
+                currency.style.animationDelay = Math.random() * 15 + 's';
+                currency.style.animationDuration = (15 + Math.random() * 10) + 's';
+                container.appendChild(currency);
+            }
+        }
+
+        createCurrency();
+
+        // Sync salary from New Regime to Old Regime
+        function syncSalary() {
+            const newSalary = document.getElementById('grossSalaryNew').value;
+            document.getElementById('grossSalaryOld').value = newSalary;
+        }
+
+        function updateChart(newTax, oldTax) {
+            const chartElement = document.getElementById('taxChartBars');
+            const barNew = document.getElementById('barNew');
+            const barOld = document.getElementById('barOld');
+            const labelNew = document.getElementById('labelNew');
+            const labelOld = document.getElementById('labelOld');
+
+            // Check if both values are zero
+            if (newTax === 0 && oldTax === 0) {
+                chartElement.classList.add('empty');
+                barNew.style.height = '0%';
+                barOld.style.height = '0%';
+                return;
+            }
+
+            // Remove empty class if chart has data
+            chartElement.classList.remove('empty');
+
+            // Update labels
+            labelNew.textContent = '₹ ' + newTax.toLocaleString('en-IN');
+            labelOld.textContent = '₹ ' + oldTax.toLocaleString('en-IN');
+
+            // Calculate heights based on max value
+            const maxValue = Math.max(newTax, oldTax);
+            
+            if (maxValue === 0) {
+                barNew.style.height = '0%';
+                barOld.style.height = '0%';
+                return;
+            }
+
+            // Animate bars
+            requestAnimationFrame(() => {
+                barNew.style.height = (newTax / maxValue * 100) + '%';
+                barOld.style.height = (oldTax / maxValue * 100) + '%';
+            });
+        }
+
+        function formatCurrency(amount) {
+            return '₹' + amount.toLocaleString('en-IN');
+        }
+
+        function calculateNewRegime(grossSalary) {
+            const stdDeduction = 75000;
+            const netIncome = Math.max(0, grossSalary - stdDeduction);
+            
+            let tax = 0;
+            let breakdown = '';
+
+            // 12 Lakh Rebate Rule
+            if (netIncome <= 1200000) {
+                tax = 0;
+                breakdown = '<div class="breakdown-item"><span>Income ≤ ₹12,00,000</span><span>Rebate Applied: ₹0</span></div>';
+            } else {
+                // Calculate tax on full income using progressive slabs
+                const slabs = [
+                    { limit: 400000, rate: 0 },
+                    { limit: 800000, rate: 0.05 },
+                    { limit: 1200000, rate: 0.10 },
+                    { limit: 1600000, rate: 0.15 },
+                    { limit: 2000000, rate: 0.20 },
+                    { limit: 2400000, rate: 0.25 },
+                    { limit: Infinity, rate: 0.30 }
+                ];
+
+                let previousLimit = 0;
+                breakdown = '<strong>Tax Calculation:</strong><br>';
+
+                for (let slab of slabs) {
+                    if (netIncome > previousLimit) {
+                        const taxableInSlab = Math.min(netIncome, slab.limit) - previousLimit;
+                        const taxInSlab = taxableInSlab * slab.rate;
+                        tax += taxInSlab;
+
+                        if (taxInSlab > 0) {
+                            breakdown += `<div class="breakdown-item"><span>${formatCurrency(previousLimit + 1)} - ${formatCurrency(Math.min(netIncome, slab.limit))} @ ${slab.rate * 100}%</span><span>${formatCurrency(Math.round(taxInSlab))}</span></div>`;
+                        }
+                        previousLimit = slab.limit;
+                    }
+                }
+            }
+
+            const cess = tax * 0.04;
+            const totalTax = tax + cess;
+
+            return {
+                grossSalary: grossSalary,
+                taxableIncome: netIncome,
+                taxBeforeCess: Math.round(tax),
+                cess: Math.round(cess),
+                totalTax: Math.round(totalTax),
+                breakdown: breakdown
+            };
+        }
+
+        function calculateOldRegime(grossSalary, deductions) {
+            const stdDeduction = 50000;
+            const netIncome = Math.max(0, grossSalary - stdDeduction - deductions);
+            
+            let tax = 0;
+            let breakdown = '';
+
+            // 5 Lakh Rebate Rule
+            if (netIncome <= 500000) {
+                tax = 0;
+                breakdown = '<div class="breakdown-item"><span>Income ≤ ₹5,00,000</span><span>Rebate Applied: ₹0</span></div>';
+            } else {
+                // Calculate tax on full income using progressive slabs
+                const slabs = [
+                    { limit: 250000, rate: 0 },
+                    { limit: 500000, rate: 0.05 },
+                    { limit: 1000000, rate: 0.20 },
+                    { limit: Infinity, rate: 0.30 }
+                ];
+
+                let previousLimit = 0;
+                breakdown = '<strong>Tax Calculation:</strong><br>';
+
+                for (let slab of slabs) {
+                    if (netIncome > previousLimit) {
+                        const taxableInSlab = Math.min(netIncome, slab.limit) - previousLimit;
+                        const taxInSlab = taxableInSlab * slab.rate;
+                        tax += taxInSlab;
+
+                        if (taxInSlab > 0) {
+                            breakdown += `<div class="breakdown-item"><span>${formatCurrency(previousLimit + 1)} - ${formatCurrency(Math.min(netIncome, slab.limit))} @ ${slab.rate * 100}%</span><span>${formatCurrency(Math.round(taxInSlab))}</span></div>`;
+                        }
+                        previousLimit = slab.limit;
+                    }
+                }
+            }
+
+            const cess = tax * 0.04;
+            const totalTax = tax + cess;
+
+            return {
+                grossSalary: grossSalary,
+                deductions: deductions,
+                taxableIncome: netIncome,
+                taxBeforeCess: Math.round(tax),
+                cess: Math.round(cess),
+                totalTax: Math.round(totalTax),
+                breakdown: breakdown
+            };
+        }
+
+        function calculateTax() {
+            // Get input values, default to 0 if empty or invalid
+            const grossSalaryNew = parseFloat(document.getElementById('grossSalaryNew').value) || 0;
+            const grossSalaryOld = parseFloat(document.getElementById('grossSalaryOld').value) || 0;
+            const deductions = parseFloat(document.getElementById('deductions').value) || 0;
+
+            // Calculate New Regime
+            const newRegime = calculateNewRegime(grossSalaryNew);
+            document.getElementById('newGross').textContent = formatCurrency(newRegime.grossSalary);
+            document.getElementById('newTaxable').textContent = formatCurrency(newRegime.taxableIncome);
+            document.getElementById('newTaxBeforeCess').textContent = formatCurrency(newRegime.taxBeforeCess);
+            document.getElementById('newCess').textContent = formatCurrency(newRegime.cess);
+            document.getElementById('newTotal').textContent = formatCurrency(newRegime.totalTax);
+            document.getElementById('newBreakdown').innerHTML = newRegime.breakdown;
+
+            // Calculate Old Regime
+            const oldRegime = calculateOldRegime(grossSalaryOld, deductions);
+            document.getElementById('oldGross').textContent = formatCurrency(oldRegime.grossSalary);
+            document.getElementById('oldDeductions').textContent = formatCurrency(oldRegime.deductions);
+            document.getElementById('oldTaxable').textContent = formatCurrency(oldRegime.taxableIncome);
+            document.getElementById('oldTaxBeforeCess').textContent = formatCurrency(oldRegime.taxBeforeCess);
+            document.getElementById('oldCess').textContent = formatCurrency(oldRegime.cess);
+            document.getElementById('oldTotal').textContent = formatCurrency(oldRegime.totalTax);
+            document.getElementById('oldBreakdown').innerHTML = oldRegime.breakdown;
+
+            // Comparison
+            if (grossSalaryNew > 0 || grossSalaryOld > 0) {
+                const savings = oldRegime.totalTax - newRegime.totalTax;
+                const savingsElement = document.getElementById('savingsAmount');
+                const recommendationElement = document.getElementById('recommendation');
+
+                // Update chart
+                updateChart(newRegime.totalTax, oldRegime.totalTax);
+
+                if (savings > 0) {
+                    savingsElement.textContent = `Save ${formatCurrency(Math.abs(savings))} with New Regime! 💰`;
+                    savingsElement.style.color = '#28a745';
+                    recommendationElement.textContent = `💡 Recommendation: Choose New Regime to save ${formatCurrency(Math.abs(savings))} annually!`;
+                    recommendationElement.style.background = '#d4edda';
+                } else if (savings < 0) {
+                    savingsElement.textContent = `Save ${formatCurrency(Math.abs(savings))} with Old Regime! 💰`;
+                    savingsElement.style.color = '#28a745';
+                    recommendationElement.textContent = `💡 Recommendation: Choose Old Regime to save ${formatCurrency(Math.abs(savings))} annually! Make sure to claim all eligible deductions.`;
+                    recommendationElement.style.background = '#d4edda';
+                } else {
+                    savingsElement.textContent = 'Both regimes result in same tax! 🤝';
+                    savingsElement.style.color = '#ffc107';
+                    recommendationElement.textContent = '💡 Both regimes are equal for you. Choose New Regime for simplicity or Old Regime if you prefer claiming deductions.';
+                    recommendationElement.style.background = '#fff3cd';
+                }
+            }
+        }
+
+        // Initial calculation
+        calculateTax();
+
+        // Print functionality
+        function printCalculator() {
+            window.print();
+        }
+
+        // Reset all inputs
+        function resetAll() {
+            document.getElementById('grossSalaryNew').value = '';
+            document.getElementById('grossSalaryOld').value = '';
+            document.getElementById('deductions').value = '';
+            
+            // Reset bar chart
+            const barNew = document.getElementById('barNew');
+            const barOld = document.getElementById('barOld');
+            const chartElement = document.getElementById('taxChartBars');
+            
+            if (barNew && barOld) {
+                barNew.style.height = '0%';
+                barOld.style.height = '0%';
+            }
+            
+            if (chartElement) {
+                chartElement.classList.add('empty');
+            }
+            
+            calculateTax();
+        }
+
+        // Tic-Tac-Toe Game Logic - Neon Glass Edition
+        const gameBoardEl = document.getElementById('gameBoard');
+        const winLineEl = document.getElementById('winLine');
+        const dustCanvas = document.getElementById('dustCanvas');
+        const dustCtx = dustCanvas ? dustCanvas.getContext('2d') : null;
+
+        let gameBoard = Array(9).fill(null);
+        let currentPlayer = 'x';
+        let gameLocked = false;
+        let scores = { x: 0, o: 0 };
+        const gameCells = [];
+
+        const winConditions = [
+            [0,1,2],[3,4,5],[6,7,8],
+            [0,3,6],[1,4,7],[2,5,8],
+            [0,4,8],[2,4,6]
+        ];
+
+        function resizeDustCanvas() {
+            if (!dustCanvas) return;
+            dustCanvas.width = dustCanvas.clientWidth;
+            dustCanvas.height = dustCanvas.clientHeight;
+        }
+
+        window.addEventListener('resize', resizeDustCanvas);
+
+        function initGame() {
+            gameBoardEl.innerHTML = '';
+            gameBoard = Array(9).fill(null);
+            if (winLineEl) {
+                winLineEl.style.setProperty('--len', '0px');
+            }
+            gameLocked = false;
+            
+            for (let i = 0; i < 9; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.setAttribute('data-index', i);
+                cell.onclick = () => playMove(i);
+                gameBoardEl.appendChild(cell);
+                gameCells[i] = cell;
+            }
+            resizeDustCanvas();
+            
+            const playerXName = document.getElementById('playerXName').value;
+            document.getElementById('gameStatus').textContent = `${playerXName}'s turn`;
+        }
+
+        function playMove(i) {
+            if (gameLocked || gameBoard[i]) return;
+            
+            gameBoard[i] = currentPlayer;
+            gameCells[i].classList.add('taken', currentPlayer);
+            gameCells[i].textContent = currentPlayer === 'x' ? '✕' : '◯';
+
+            const winCombo = checkWinner();
+            if (winCombo) {
+                gameLocked = true;
+                scores[currentPlayer]++;
+                updateScores();
+                drawWinningLine(winCombo);
+                
+                const playerName = document.getElementById(`player${currentPlayer.toUpperCase()}Name`).value;
+                document.getElementById('gameStatus').textContent = `🎉 ${playerName} wins!`;
+                
+                setTimeout(() => dustAnimation(winCombo), 300);
+                setTimeout(resetBoard, 1800);
+                return;
+            }
+
+            if (!gameBoard.includes(null)) {
+                document.getElementById('gameStatus').textContent = "🤝 It's a draw!";
+                gameLocked = true;
+                setTimeout(resetBoard, 1500);
+                return;
+            }
+
+            currentPlayer = currentPlayer === 'x' ? 'o' : 'x';
+            const nextPlayerName = document.getElementById(`player${currentPlayer.toUpperCase()}Name`).value;
+            document.getElementById('gameStatus').textContent = `${nextPlayerName}'s turn`;
+        }
+
+        function checkWinner() {
+            return winConditions.find(combo => 
+                combo.every(i => gameBoard[i] === currentPlayer)
+            );
+        }
+
+        function drawWinningLine(combo) {
+            if (!winLineEl) return;
+            
+            const cellRects = combo.map(i => gameCells[i].getBoundingClientRect());
+            const boardRect = gameBoardEl.getBoundingClientRect();
+
+            const x1 = cellRects[0].left + cellRects[0].width / 2 - boardRect.left;
+            const y1 = cellRects[0].top + cellRects[0].height / 2 - boardRect.top;
+            const x2 = cellRects[2].left + cellRects[2].width / 2 - boardRect.left;
+            const y2 = cellRects[2].top + cellRects[2].height / 2 - boardRect.top;
+
+            const length = Math.hypot(x2 - x1, y2 - y1);
+            const rotation = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI + 'deg';
+
+            winLineEl.style.setProperty('--x1', x1 + 'px');
+            winLineEl.style.setProperty('--y1', y1 + 'px');
+            winLineEl.style.setProperty('--len', length + 'px');
+            winLineEl.style.setProperty('--rot', rotation);
+        }
+
+        function dustAnimation(combo) {
+            if (!dustCanvas || !dustCtx) return;
+            
+            resizeDustCanvas();
+            const particles = [];
+            const boardRect = gameBoardEl.getBoundingClientRect();
+
+            combo.forEach(i => {
+                const cellRect = gameCells[i].getBoundingClientRect();
+                
+                for (let j = 0; j < 40; j++) {
+                    particles.push({
+                        x: cellRect.left + Math.random() * cellRect.width - boardRect.left,
+                        y: cellRect.top + Math.random() * cellRect.height - boardRect.top,
+                        vx: (Math.random() - 0.5) * 1.2,
+                        vy: Math.random() * 2 + 1,
+                        life: Math.random() * 60 + 40
+                    });
+                }
+                gameCells[i].textContent = '';
+            });
+
+            function animate() {
+                dustCtx.clearRect(0, 0, dustCanvas.width, dustCanvas.height);
+                particles.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.life--;
+                    dustCtx.fillStyle = `rgba(80,250,123,${p.life / 100})`;
+                    dustCtx.fillRect(p.x, p.y, 2, 2);
+                });
+                if (particles.some(p => p.life > 0)) {
+                    requestAnimationFrame(animate);
+                }
+            }
+            animate();
+        }
+
+        function updateScores() {
+            document.getElementById('scoreX').textContent = scores.x;
+            document.getElementById('scoreO').textContent = scores.o;
+        }
+
+        function resetBoard() {
+            if (winLineEl) {
+                winLineEl.style.setProperty('--len', '0px');
+            }
+            if (dustCanvas && dustCtx) {
+                dustCtx.clearRect(0, 0, dustCanvas.width, dustCanvas.height);
+            }
+            gameCells.forEach(cell => {
+                cell.textContent = '';
+                cell.classList.remove('x', 'o', 'taken');
+            });
+            gameBoard.fill(null);
+            gameLocked = false;
+            currentPlayer = 'x';
+            
+            const playerXName = document.getElementById('playerXName').value;
+            document.getElementById('gameStatus').textContent = `${playerXName}'s turn`;
+        }
+
+        function resetGame() {
+            resetBoard();
+        }
+
+        // Initialize game on load
+        if (gameBoardEl) {
+            initGame();
+        }
+
+        // Download as PDF (using print to PDF)
+        function downloadPDF() {
+            // Simple implementation using browser's print to PDF
+            const printWindow = window.open('', '_blank');
+            const content = document.documentElement.outerHTML;
+            
+            printWindow.document.write(content);
+            printWindow.document.close();
+            
+            // Wait for content to load then print
+            setTimeout(() => {
+                printWindow.print();
+            }, 500);
+        }
+    </script>
+</body>
+</html>
