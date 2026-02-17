@@ -889,6 +889,13 @@
             }
         }
     </style>
+
+    <!-- Mobile Performance: slows CSS animations on touch devices only, tax code untouched -->
+    <style media="(hover: none) and (pointer: coarse)">
+        body { animation-duration: 30s !important; }
+        .currency { animation-duration: 25s !important; opacity: 0.2 !important; filter: none !important; }
+        .powered-by { animation: none !important; filter: none !important; }
+    </style>
 </head>
 <body>
     <div class="currency-animation" id="currencyBg"></div>
@@ -2057,6 +2064,32 @@
             
             animateRelief();
         }
+
+        // ── Mobile heat fix ── runs ONLY on phones/tablets (touch + no hover)
+        // Caps canvas RAF loops to 30 FPS and trims background currency symbols.
+        // Zero changes to tax calculation code.
+        (function() {
+            var isTouch = (navigator.maxTouchPoints > 1) ||
+                          /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+            if (!isTouch) return;
+
+            // 1. Remove excess currency symbols (keep 6 out of 15)
+            var bg = document.getElementById('currencyBg');
+            if (bg) {
+                var kids = Array.from(bg.children);
+                kids.slice(6).forEach(function(el) { bg.removeChild(el); });
+            }
+
+            // 2. Throttle ALL canvas requestAnimationFrame loops to ~30 FPS
+            var _raf = window.requestAnimationFrame.bind(window);
+            var lastT = 0;
+            window.requestAnimationFrame = function(cb) {
+                return _raf(function(t) {
+                    if (t - lastT >= 32) { lastT = t; cb(t); } // ~30 FPS gate
+                    else { window.requestAnimationFrame(cb); }  // retry next frame
+                });
+            };
+        })();
     </script>
 </body>
 </html>
