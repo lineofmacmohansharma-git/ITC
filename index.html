@@ -936,10 +936,6 @@
                         <span class="result-label">Tax (Before Cess):</span>
                         <span class="result-value" id="newTaxBeforeCess">₹0</span>
                     </div>
-                    <div class="result-item tax-calculation" id="newSurchargeRow" style="display: none;">
-                        <span class="result-label">Surcharge:</span>
-                        <span class="result-value" id="newSurcharge">₹0</span>
-                    </div>
                     <div class="result-item tax-calculation">
                         <span class="result-label">Health & Education Cess (4%):</span>
                         <span class="result-value" id="newCess">₹0</span>
@@ -997,10 +993,6 @@
                     <div class="result-item tax-calculation">
                         <span class="result-label">Tax (Before Cess):</span>
                         <span class="result-value" id="oldTaxBeforeCess">₹0</span>
-                    </div>
-                    <div class="result-item tax-calculation" id="oldSurchargeRow" style="display: none;">
-                        <span class="result-label">Surcharge:</span>
-                        <span class="result-value" id="oldSurcharge">₹0</span>
                     </div>
                     <div class="result-item tax-calculation">
                         <span class="result-label">Health & Education Cess (4%):</span>
@@ -1226,22 +1218,9 @@
                 }
             }
             
-            // Calculate surcharge based on TAX BEFORE CESS (New Regime)
-            let _0xsurcharge = 0;
-            if(_0xt > 50000000) {
-                _0xsurcharge = _0xt * 0.25;
-            } else if(_0xt > 20000000) {
-                _0xsurcharge = _0xt * 0.25;
-            } else if(_0xt > 10000000) {
-                _0xsurcharge = _0xt * 0.15;
-            } else if(_0xt > 5000000) {
-                _0xsurcharge = _0xt * 0.10;
-            }
-            
-            const _0xtWithSurcharge = _0xt + _0xsurcharge;
-            const _0xc=_0xtWithSurcharge*0.04;
-            const _0xtt=_0xtWithSurcharge+_0xc;
-            return{grossSalary:_0xg,taxableIncome:_0xn,taxBeforeCess:Math.round(_0xt),surcharge:Math.round(_0xsurcharge),cess:Math.round(_0xc),totalTax:Math.round(_0xtt),breakdown:_0xb};
+            const _0xc=_0xt*0.04;
+            const _0xtt=_0xt+_0xc;
+            return{grossSalary:_0xg,taxableIncome:_0xn,taxBeforeCess:Math.round(_0xt),cess:Math.round(_0xc),totalTax:Math.round(_0xtt),breakdown:_0xb};
         }
 
         function _0xcalcOld(_0xg,_0xd){
@@ -1286,25 +1265,12 @@
                 }
             }
             
-            // Calculate surcharge based on TAX BEFORE CESS (Old Regime)
-            let _0xsurcharge = 0;
-            if(_0xt > 50000000) {
-                _0xsurcharge = _0xt * 0.37;
-            } else if(_0xt > 20000000) {
-                _0xsurcharge = _0xt * 0.25;
-            } else if(_0xt > 10000000) {
-                _0xsurcharge = _0xt * 0.15;
-            } else if(_0xt > 5000000) {
-                _0xsurcharge = _0xt * 0.10;
-            }
-            
-            const _0xtWithSurcharge = _0xt + _0xsurcharge;
-            const _0xc=_0xtWithSurcharge*0.04;
-            const _0xtt=_0xtWithSurcharge+_0xc;
-            return{grossSalary:_0xg,deductions:_0xd,taxableIncome:_0xn,taxBeforeCess:Math.round(_0xt),surcharge:Math.round(_0xsurcharge),cess:Math.round(_0xc),totalTax:Math.round(_0xtt),breakdown:_0xb};
+            const _0xc=_0xt*0.04;
+            const _0xtt=_0xt+_0xc;
+            return{grossSalary:_0xg,deductions:_0xd,taxableIncome:_0xn,taxBeforeCess:Math.round(_0xt),cess:Math.round(_0xc),totalTax:Math.round(_0xtt),breakdown:_0xb};
         }
 
-        function _0xabcdef(){const _0xgnv=document[_0x5a6b[2]]('grossSalaryNew')[_0x5a6b[3]].replace(/,/g,'');const _0xgn=parseFloat(_0xgnv)||0;const _0xdv=document[_0x5a6b[2]]('deductions')[_0x5a6b[3]].replace(/,/g,'');let _0xd=parseFloat(_0xdv)||0;if(_0xd>525000){_0xd=525000;document[_0x5a6b[2]]('deductions')[_0x5a6b[3]]='5,25,000';}document[_0x5a6b[2]]('grossSalaryOld')[_0x5a6b[3]]=_0xgn>0?_0xgn[_0x5a6b[4]](_0x5a6b[5]):'';document[_0x5a6b[2]]('reliefGrossSalary')[_0x5a6b[3]]=_0xgn>0?_0xgn[_0x5a6b[4]](_0x5a6b[5]):'';if(_0xgn>0){document[_0x5a6b[2]]('newSalaryWords')[_0x5a6b[1]]=_0xnumToWords(_0xgn);document[_0x5a6b[2]]('oldSalaryWords')[_0x5a6b[1]]=_0xnumToWords(_0xgn);}else{document[_0x5a6b[2]]('newSalaryWords')[_0x5a6b[1]]='';document[_0x5a6b[2]]('oldSalaryWords')[_0x5a6b[1]]='';}if(_0xd>0){document[_0x5a6b[2]]('deductionWords')[_0x5a6b[1]]=_0xnumToWords(_0xd);}else{document[_0x5a6b[2]]('deductionWords')[_0x5a6b[1]]='';}const _0xnr=_0xcalcNew(_0xgn);document[_0x5a6b[2]]('newGross')[_0x5a6b[1]]=_0xfmt(_0xnr.grossSalary);document[_0x5a6b[2]]('newTaxable')[_0x5a6b[1]]=_0xfmt(_0xnr.taxableIncome);document[_0x5a6b[2]]('newTaxBeforeCess')[_0x5a6b[1]]=_0xfmt(_0xnr.taxBeforeCess);if(_0xnr.taxBeforeCess>5000000){document[_0x5a6b[2]]('newSurchargeRow')[_0x5a6b[10]][_0x5a6b[11]]='flex';document[_0x5a6b[2]]('newSurcharge')[_0x5a6b[1]]=_0xfmt(_0xnr.surcharge);}else{document[_0x5a6b[2]]('newSurchargeRow')[_0x5a6b[10]][_0x5a6b[11]]='none';}document[_0x5a6b[2]]('newCess')[_0x5a6b[1]]=_0xfmt(_0xnr.cess);document[_0x5a6b[2]]('newTotal')[_0x5a6b[1]]=_0xfmt(_0xnr.totalTax);document[_0x5a6b[2]]('newBreakdown')[_0x5a6b[6]]=_0xnr.breakdown;const _0xor=_0xcalcOld(_0xgn,_0xd);document[_0x5a6b[2]]('oldGross')[_0x5a6b[1]]=_0xfmt(_0xor.grossSalary);document[_0x5a6b[2]]('oldDeductions')[_0x5a6b[1]]=_0xfmt(_0xor.deductions);document[_0x5a6b[2]]('oldTaxable')[_0x5a6b[1]]=_0xfmt(_0xor.taxableIncome);document[_0x5a6b[2]]('oldTaxBeforeCess')[_0x5a6b[1]]=_0xfmt(_0xor.taxBeforeCess);if(_0xor.taxBeforeCess>5000000){document[_0x5a6b[2]]('oldSurchargeRow')[_0x5a6b[10]][_0x5a6b[11]]='flex';document[_0x5a6b[2]]('oldSurcharge')[_0x5a6b[1]]=_0xfmt(_0xor.surcharge);}else{document[_0x5a6b[2]]('oldSurchargeRow')[_0x5a6b[10]][_0x5a6b[11]]='none';}document[_0x5a6b[2]]('oldCess')[_0x5a6b[1]]=_0xfmt(_0xor.cess);document[_0x5a6b[2]]('oldTotal')[_0x5a6b[1]]=_0xfmt(_0xor.totalTax);document[_0x5a6b[2]]('oldBreakdown')[_0x5a6b[6]]=_0xor.breakdown;_0x9j0k1l();}
+        function _0xabcdef(){const _0xgnv=document[_0x5a6b[2]]('grossSalaryNew')[_0x5a6b[3]].replace(/,/g,'');const _0xgn=parseFloat(_0xgnv)||0;const _0xdv=document[_0x5a6b[2]]('deductions')[_0x5a6b[3]].replace(/,/g,'');const _0xd=parseFloat(_0xdv)||0;document[_0x5a6b[2]]('grossSalaryOld')[_0x5a6b[3]]=_0xgn>0?_0xgn[_0x5a6b[4]](_0x5a6b[5]):'';document[_0x5a6b[2]]('reliefGrossSalary')[_0x5a6b[3]]=_0xgn>0?_0xgn[_0x5a6b[4]](_0x5a6b[5]):'';if(_0xgn>0){document[_0x5a6b[2]]('newSalaryWords')[_0x5a6b[1]]=_0xnumToWords(_0xgn);document[_0x5a6b[2]]('oldSalaryWords')[_0x5a6b[1]]=_0xnumToWords(_0xgn);}else{document[_0x5a6b[2]]('newSalaryWords')[_0x5a6b[1]]='';document[_0x5a6b[2]]('oldSalaryWords')[_0x5a6b[1]]='';}if(_0xd>0){document[_0x5a6b[2]]('deductionWords')[_0x5a6b[1]]=_0xnumToWords(_0xd);}else{document[_0x5a6b[2]]('deductionWords')[_0x5a6b[1]]='';}const _0xnr=_0xcalcNew(_0xgn);document[_0x5a6b[2]]('newGross')[_0x5a6b[1]]=_0xfmt(_0xnr.grossSalary);document[_0x5a6b[2]]('newTaxable')[_0x5a6b[1]]=_0xfmt(_0xnr.taxableIncome);document[_0x5a6b[2]]('newTaxBeforeCess')[_0x5a6b[1]]=_0xfmt(_0xnr.taxBeforeCess);document[_0x5a6b[2]]('newCess')[_0x5a6b[1]]=_0xfmt(_0xnr.cess);document[_0x5a6b[2]]('newTotal')[_0x5a6b[1]]=_0xfmt(_0xnr.totalTax);document[_0x5a6b[2]]('newBreakdown')[_0x5a6b[6]]=_0xnr.breakdown;const _0xor=_0xcalcOld(_0xgn,_0xd);document[_0x5a6b[2]]('oldGross')[_0x5a6b[1]]=_0xfmt(_0xor.grossSalary);document[_0x5a6b[2]]('oldDeductions')[_0x5a6b[1]]=_0xfmt(_0xor.deductions);document[_0x5a6b[2]]('oldTaxable')[_0x5a6b[1]]=_0xfmt(_0xor.taxableIncome);document[_0x5a6b[2]]('oldTaxBeforeCess')[_0x5a6b[1]]=_0xfmt(_0xor.taxBeforeCess);document[_0x5a6b[2]]('oldCess')[_0x5a6b[1]]=_0xfmt(_0xor.cess);document[_0x5a6b[2]]('oldTotal')[_0x5a6b[1]]=_0xfmt(_0xor.totalTax);document[_0x5a6b[2]]('oldBreakdown')[_0x5a6b[6]]=_0xor.breakdown;_0x9j0k1l();}
 
         function _0x9j0k1l(){
             const _0xgiv=document[_0x5a6b[2]]('reliefGrossSalary')[_0x5a6b[3]].replace(/,/g,'');
@@ -1361,21 +1327,8 @@
                 }
             }
             
-            // Calculate surcharge based on TAX BEFORE CESS (New Regime rules for marginal relief)
-            let _0xsurcharge = 0;
-            if(_0xta > 50000000) {
-                _0xsurcharge = _0xta * 0.25;
-            } else if(_0xta > 20000000) {
-                _0xsurcharge = _0xta * 0.25;
-            } else if(_0xta > 10000000) {
-                _0xsurcharge = _0xta * 0.15;
-            } else if(_0xta > 5000000) {
-                _0xsurcharge = _0xta * 0.10;
-            }
-            
-            const _0xtaWithSurcharge = _0xta + _0xsurcharge;
-            const _0xcess=_0xtaWithSurcharge*0.04;
-            const _0xft=_0xtaWithSurcharge+_0xcess;
+            const _0xcess=_0xta*0.04;
+            const _0xft=_0xta+_0xcess;
             
             const _0xrd=document[_0x5a6b[2]]('reliefResult');
             const _0xmb=document[_0x5a6b[2]]('reliefMessage');
@@ -1425,14 +1378,14 @@
         
         function _0x7g8h9i(){const _0xpw=window.open('','_blank');const _0xc=document.documentElement.outerHTML;_0xpw.document.write(_0xc);_0xpw.document.close();setTimeout(()=>{_0xpw.print();},500);}
 
-        const _0xgbe=document[_0x5a6b[2]]('gameBoard');const _0xwle=document[_0x5a6b[2]]('winLine');const _0xdcv=document[_0x5a6b[2]]('dustCanvas');const _0xdct=_0xdcv?_0xdcv.getContext('2d'):null;let _0xgb=Array(9).fill(null);let _0xcp='x';let _0xgl=false;let _0xsc={x:0,o:0};const _0xgc=[];const _0xwc=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+        const _0xgbe=document[_0x5a6b[2]]('gameBoard');const _0xwle=document[_0x5a6b[2]]('winLine');const _0xdcv=document[_0x5a6b[2]]('dustCanvas');const _0xdct=_0xdcv?_0xdcv.getContext('2d'):null;let _0xgb=Array(9).fill(null);let _0xcp='x';let _0xgl=false;let _0xsc={x:0,o:0};const _0xgc=[];const _0xwc=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];let _0xlw=null;
 
         function _0xrdc(){if(!_0xdcv)return;_0xdcv.width=_0xdcv.clientWidth;_0xdcv.height=_0xdcv.clientHeight;}
         window.addEventListener('resize',_0xrdc);
 
         function _0xinit(){_0xgbe[_0x5a6b[6]]='';_0xgb=Array(9).fill(null);if(_0xwle){_0xwle[_0x5a6b[10]].setProperty('--len','0px');}_0xgl=false;for(let _0xi=0;_0xi<9;_0xi++){const _0xc=document.createElement('div');_0xc.className='cell';_0xc.setAttribute('data-index',_0xi);_0xc.onclick=()=>_0xpm(_0xi);_0xgbe.appendChild(_0xc);_0xgc[_0xi]=_0xc;}_0xrdc();const _0xpn=document[_0x5a6b[2]]('playerXName')[_0x5a6b[3]];document[_0x5a6b[2]]('gameStatus')[_0x5a6b[1]]=`${_0xpn}'s turn`;}
 
-        function _0xpm(_0xi){if(_0xgl||_0xgb[_0xi])return;_0xgb[_0xi]=_0xcp;_0xgc[_0xi][_0x5a6b[7]][_0x5a6b[8]]('taken',_0xcp);_0xgc[_0xi][_0x5a6b[1]]=_0xcp==='x'?'✕':'◯';const _0xwco=_0xcw();if(_0xwco){_0xgl=true;_0xsc[_0xcp]++;_0xus();_0xdwl(_0xwco);const _0xpn=document[_0x5a6b[2]](`player${_0xcp.toUpperCase()}Name`)[_0x5a6b[3]];document[_0x5a6b[2]]('gameStatus')[_0x5a6b[1]]=`🎉 ${_0xpn} wins!`;setTimeout(()=>_0xda(_0xwco),300);setTimeout(_0xrb,1800);return;}if(!_0xgb.includes(null)){document[_0x5a6b[2]]('gameStatus')[_0x5a6b[1]]="🤝 It's a draw!";_0xgl=true;setTimeout(_0xrb,1500);return;}_0xcp=_0xcp==='x'?'o':'x';const _0xnpn=document[_0x5a6b[2]](`player${_0xcp.toUpperCase()}Name`)[_0x5a6b[3]];document[_0x5a6b[2]]('gameStatus')[_0x5a6b[1]]=`${_0xnpn}'s turn`;}
+        function _0xpm(_0xi){if(_0xgl||_0xgb[_0xi])return;_0xgb[_0xi]=_0xcp;_0xgc[_0xi][_0x5a6b[7]][_0x5a6b[8]]('taken',_0xcp);_0xgc[_0xi][_0x5a6b[1]]=_0xcp==='x'?'✕':'◯';const _0xwco=_0xcw();if(_0xwco){_0xgl=true;_0xlw=_0xcp;_0xsc[_0xcp]++;_0xus();_0xdwl(_0xwco);const _0xpn=document[_0x5a6b[2]](`player${_0xcp.toUpperCase()}Name`)[_0x5a6b[3]];document[_0x5a6b[2]]('gameStatus')[_0x5a6b[1]]=`🎉 ${_0xpn} wins!`;setTimeout(()=>_0xda(_0xwco),300);setTimeout(_0xrb,1800);return;}if(!_0xgb.includes(null)){document[_0x5a6b[2]]('gameStatus')[_0x5a6b[1]]="🤝 It's a draw!";_0xgl=true;setTimeout(_0xrb,1500);return;}_0xcp=_0xcp==='x'?'o':'x';const _0xnpn=document[_0x5a6b[2]](`player${_0xcp.toUpperCase()}Name`)[_0x5a6b[3]];document[_0x5a6b[2]]('gameStatus')[_0x5a6b[1]]=`${_0xnpn}'s turn`;}
 
         function _0xcw(){return _0xwc.find(_0xco=>_0xco.every(_0xi=>_0xgb[_0xi]===_0xcp));}
 
@@ -1442,7 +1395,7 @@
 
         function _0xus(){document[_0x5a6b[2]]('scoreX')[_0x5a6b[1]]=_0xsc.x;document[_0x5a6b[2]]('scoreO')[_0x5a6b[1]]=_0xsc.o;}
 
-        function _0xrb(){if(_0xwle){_0xwle[_0x5a6b[10]].setProperty('--len','0px');}if(_0xdcv&&_0xdct){_0xdct.clearRect(0,0,_0xdcv.width,_0xdcv.height);}_0xgc.forEach(_0xc=>{_0xc[_0x5a6b[1]]='';_0xc[_0x5a6b[7]][_0x5a6b[9]]('x','o','taken');});_0xgb.fill(null);_0xgl=false;_0xcp='x';const _0xpn=document[_0x5a6b[2]]('playerXName')[_0x5a6b[3]];document[_0x5a6b[2]]('gameStatus')[_0x5a6b[1]]=`${_0xpn}'s turn`;}
+        function _0xrb(){if(_0xwle){_0xwle[_0x5a6b[10]].setProperty('--len','0px');}if(_0xdcv&&_0xdct){_0xdct.clearRect(0,0,_0xdcv.width,_0xdcv.height);}_0xgc.forEach(_0xc=>{_0xc[_0x5a6b[1]]='';_0xc[_0x5a6b[7]][_0x5a6b[9]]('x','o','taken');});_0xgb.fill(null);_0xgl=false;if(_0xlw){_0xcp=_0xlw;}else{_0xcp=_0xcp==='x'?'o':'x';}const _0xpn=document[_0x5a6b[2]](`player${_0xcp.toUpperCase()}Name`)[_0x5a6b[3]];document[_0x5a6b[2]]('gameStatus')[_0x5a6b[1]]=`${_0xpn}'s turn`;_0xlw=null;}
 
         function _0x2m3n4o(){_0xrb();}
 
